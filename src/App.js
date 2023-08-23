@@ -5,6 +5,7 @@ import { ReactComponent as AirFlowIcon } from './images/airFlow.svg';
 import { ReactComponent as RainIcon } from './images/rain.svg';
 import { ReactComponent as RefreshIcon } from './images/refresh.svg';
 import { ThemeProvider } from '@emotion/react';
+import { useState } from 'react';
 
 const Container = styled.div`
   background-color: ${({theme})=> theme.backgroundColor};
@@ -122,8 +123,9 @@ const theme = {
 };
 
 function App() {
+  const [ currentTheme, setCurrentTheme ] = useState('light')
   return (
-    <ThemeProvider theme={theme.dark}>
+    <ThemeProvider theme={theme[currentTheme]}>
       <Container>
         <WeatherCard>
           <Location>台北市</Location>
