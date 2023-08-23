@@ -6,6 +6,8 @@ import { ReactComponent as RainIcon } from './images/rain.svg';
 import { ReactComponent as RefreshIcon } from './images/refresh.svg';
 import { ThemeProvider } from '@emotion/react';
 import { useState } from 'react';
+import dayjs from 'dayjs';
+
 
 const Container = styled.div`
   background-color: ${({theme})=> theme.backgroundColor};
@@ -122,22 +124,71 @@ const theme = {
   },
 };
 
+const AUTHORIZATION_KEY = 'CWB-99E3C315-C7C0-4D8B-98A6-93D30014984D';
+const LOCATION_NAME = '臺北';
+
 function App() {
   const [ currentTheme, setCurrentTheme ] = useState('light')
+
+  //定義會使用到的資料狀態
+  const [ currentWeather, setCurrentWeather ] = useState({
+    locationName: '臺北市',
+    description: '多雲時晴',
+    windSpped: 1.1,
+    temperature: 22.9,
+    rainPossibility: 48.3,
+    observationTime: '2020-12-12 20:10:00',
+  });
+
+  const handleClick = () =>{
+    fetch(
+      `https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=${AUTHORIZATION_KEY}&locationName=${LOCATION_NAME}`
+    )
+    .then((response)=>response.json())
+    .then((data)=>{
+      const locationData = data.records.location[0];
+      const weatherElements = locationData.weatherElement.reduce(
+        (neededElements, item)=>{
+          if (['WDSD', 'TEMP'].includes(item.elementName)) {
+            neededElements[item.elementName] = item.elementValue;
+          }
+          return neededElements;
+        }, {}
+      );
+
+      setCurrentWeather({
+        observationTime: locationData.time.obsTime,
+        locationName: locationData.locationName,
+        temperature: weatherElements.TEMP,
+        windSpped: weatherElements.WDSD,
+        description: '多雲時晴',
+        rainPossibility: 60,
+      });
+    });
+  };
+
   return (
     <ThemeProvider theme={theme[currentTheme]}>
       <Container>
         <WeatherCard>
-          <Location>台北市</Location>
-          <Description>多雲時晴</Description>
+          <Location>{currentWeather.locationName}</Location>
+          <Description>{currentWeather.description}</Description>
           <CurrentWeather>
-            <Temperature> 23 <Celsius>°C</Celsius>
+            <Temperature>{Math.round(currentWeather.temperature)} <Celsius>°C</Celsius>
             </Temperature>
             <DayCloudy />
           </CurrentWeather>
-          <AirFlow><AirFlowIcon /> 23 m/h</AirFlow>
-          <Rain> <RainIcon/> 48% </Rain>
-          <Refresh> 最後觀測時間: 上午 12:03 <RefreshIcon /></Refresh>
+          <AirFlow><AirFlowIcon /> {currentWeather.windSpped} m/h </AirFlow>
+          <Rain> <RainIcon/> {currentWeather.rainPossibility} %</Rain>
+          <Refresh> 
+            最後觀測時間: 
+            { 
+              new Intl.DateTimeFormat('zh-TW', {
+                hour: 'numeric',
+                minute: 'numeric',
+              }).format( dayjs(currentWeather.observationTime))} {'  '}
+            <RefreshIcon onClick={handleClick}/>
+          </Refresh>
         </WeatherCard>
       </Container>
     </ThemeProvider>
