@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import styled from '@emotion/styled';
 
 const Container = styled.div`
