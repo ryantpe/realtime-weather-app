@@ -8,7 +8,7 @@ import { ReactComponent as LoadingIcon } from './images/loading.svg';
 import { ThemeProvider } from '@emotion/react';
 import { useState, useEffect, useCallback } from 'react';
 import dayjs from 'dayjs';
-
+import { getMoment } from './utils/helpers';
 
 
 
@@ -206,6 +206,8 @@ function App() {
     isLoading: true,
   });
 
+  const moment = getMoment(LOCATION_NAME_FORECAST);
+
   const fetchData = useCallback(async()=>{
     setWeatherElement((prevState)=>({
       ...prevState,
@@ -253,7 +255,7 @@ function App() {
           <CurrentWeather>
             <Temperature>{Math.round(temperature)} <Celsius>°C</Celsius>
             </Temperature>
-            <WeatherIcon weatherCode={weatherCode} moment='day' />
+            <WeatherIcon weatherCode={weatherCode} moment={moment} />
           </CurrentWeather>
           <AirFlow><AirFlowIcon /> {windSpped} m/h </AirFlow>
           <Rain> <RainIcon/> {rainPossibility} %</Rain>
