@@ -5,7 +5,7 @@ import { ReactComponent as AirFlowIcon } from './images/airFlow.svg';
 import { ReactComponent as RainIcon } from './images/rain.svg';
 import { ReactComponent as RefreshIcon } from './images/refresh.svg';
 import { ThemeProvider } from '@emotion/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 
 
@@ -128,6 +128,7 @@ const AUTHORIZATION_KEY = 'CWB-99E3C315-C7C0-4D8B-98A6-93D30014984D';
 const LOCATION_NAME = '臺北';
 
 function App() {
+  console.log('invoke function component');
   const [ currentTheme, setCurrentTheme ] = useState('light')
 
   //定義會使用到的資料狀態
@@ -140,7 +141,12 @@ function App() {
     observationTime: '2020-12-12 20:10:00',
   });
 
-  const handleClick = () =>{
+  useEffect(()=>{
+    console.log('execute function in useEffect');
+    fetchCurrentWeather();
+  }, []);
+
+  const fetchCurrentWeather = () =>{
     fetch(
       `https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=${AUTHORIZATION_KEY}&locationName=${LOCATION_NAME}`
     )
@@ -170,6 +176,7 @@ function App() {
   return (
     <ThemeProvider theme={theme[currentTheme]}>
       <Container>
+        {console.log('render')}
         <WeatherCard>
           <Location>{currentWeather.locationName}</Location>
           <Description>{currentWeather.description}</Description>
@@ -187,7 +194,7 @@ function App() {
                 hour: 'numeric',
                 minute: 'numeric',
               }).format( dayjs(currentWeather.observationTime))} {'  '}
-            <RefreshIcon onClick={handleClick}/>
+            <RefreshIcon onClick={fetchCurrentWeather}/>
           </Refresh>
         </WeatherCard>
       </Container>
