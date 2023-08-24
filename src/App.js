@@ -6,7 +6,7 @@ import { ReactComponent as RainIcon } from './images/rain.svg';
 import { ReactComponent as RefreshIcon } from './images/refresh.svg';
 import { ReactComponent as LoadingIcon } from './images/loading.svg';
 import { ThemeProvider } from '@emotion/react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import dayjs from 'dayjs';
 import { getMoment } from './utils/helpers';
 
@@ -206,7 +206,7 @@ function App() {
     isLoading: true,
   });
 
-  const moment = getMoment(LOCATION_NAME_FORECAST);
+  const moment = useMemo(()=>getMoment(LOCATION_NAME_FORECAST), []);
 
   const fetchData = useCallback(async()=>{
     setWeatherElement((prevState)=>({
@@ -240,6 +240,9 @@ function App() {
     isLoading, 
   } = weatherElement;
 
+  useEffect(()=>{
+    setCurrentTheme( moment === 'day' ? 'light' : 'dark' );
+  }, [moment]);
 
   useEffect(()=>{
     fetchData();
