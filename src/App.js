@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { ReactComponent as DayCloudyIcon } from './images/day-cloudy.svg';
+import WeatherIcon from './components/WeatherIcon';
 import { ReactComponent as AirFlowIcon } from './images/airFlow.svg';
 import { ReactComponent as RainIcon } from './images/rain.svg';
 import { ReactComponent as RefreshIcon } from './images/refresh.svg';
@@ -111,10 +111,6 @@ const Refresh = styled.div`
       transform: rotate(0deg);
     }
   }
-`;
-
-const DayCloudy = styled(DayCloudyIcon)`
-  flex=basis: 30%;
 `;
 
 const theme = {
@@ -257,7 +253,7 @@ function App() {
           <CurrentWeather>
             <Temperature>{Math.round(temperature)} <Celsius>°C</Celsius>
             </Temperature>
-            <DayCloudy />
+            <WeatherIcon weatherCode={weatherCode} moment='day' />
           </CurrentWeather>
           <AirFlow><AirFlowIcon /> {windSpped} m/h </AirFlow>
           <Rain> <RainIcon/> {rainPossibility} %</Rain>
