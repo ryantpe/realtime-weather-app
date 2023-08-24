@@ -155,6 +155,17 @@ function App() {
     isLoading: true,
   });
 
+  const {
+    locationName,
+    description,
+    windSpped,
+    temperature,
+    rainPossibility,
+    observationTime,    
+    isLoading, 
+  } = currentWeather;
+
+
   useEffect(()=>{
     console.log('execute function in useEffect');
     fetchCurrentWeather();
@@ -196,25 +207,25 @@ function App() {
   return (
     <ThemeProvider theme={theme[currentTheme]}>
       <Container>
-        {console.log('render, isLoading:', currentWeather.isLoading)}
+        {console.log('render, isLoading:', isLoading)}
         <WeatherCard>
-          <Location>{currentWeather.locationName}</Location>
-          <Description>{currentWeather.description}</Description>
+          <Location>{locationName}</Location>
+          <Description>{description}</Description>
           <CurrentWeather>
-            <Temperature>{Math.round(currentWeather.temperature)} <Celsius>°C</Celsius>
+            <Temperature>{Math.round(temperature)} <Celsius>°C</Celsius>
             </Temperature>
             <DayCloudy />
           </CurrentWeather>
-          <AirFlow><AirFlowIcon /> {currentWeather.windSpped} m/h </AirFlow>
-          <Rain> <RainIcon/> {currentWeather.rainPossibility} %</Rain>
-          <Refresh onClick={fetchCurrentWeather} isLoading={currentWeather.isLoading}> 
+          <AirFlow><AirFlowIcon /> {windSpped} m/h </AirFlow>
+          <Rain> <RainIcon/> {rainPossibility} %</Rain>
+          <Refresh onClick={fetchCurrentWeather} isLoading={isLoading}> 
             最後觀測時間: 
             { 
               new Intl.DateTimeFormat('zh-TW', {
                 hour: 'numeric',
                 minute: 'numeric',
-              }).format( dayjs(currentWeather.observationTime))} {'  '}
-            {currentWeather.isLoading ? <LoadingIcon/> : <RefreshIcon/> }
+              }).format( dayjs(observationTime))} {'  '}
+            {isLoading ? <LoadingIcon/> : <RefreshIcon/> }
           </Refresh>
         </WeatherCard>
       </Container>
