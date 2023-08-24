@@ -6,7 +6,7 @@ import { ReactComponent as RainIcon } from './images/rain.svg';
 import { ReactComponent as RefreshIcon } from './images/refresh.svg';
 import { ReactComponent as LoadingIcon } from './images/loading.svg';
 import { ThemeProvider } from '@emotion/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import dayjs from 'dayjs';
 
 
@@ -193,7 +193,6 @@ const fetchWeatherForecast = () =>{
   });
 };
 
-
 function App() {
   console.log('invoke function component');
   const [ currentTheme, setCurrentTheme ] = useState('light')
@@ -211,6 +210,26 @@ function App() {
     isLoading: true,
   });
 
+  const fetchData = useCallback(async()=>{
+    setWeatherElement((prevState)=>({
+      ...prevState,
+      isLoading: true,
+    }));
+    const [currentWeather, weatherForecast] = await Promise.all([
+      fetchCurrentWeather(), 
+      fetchWeatherForecast(),
+    ]);
+  
+    console.log(currentWeather, weatherForecast)
+    setWeatherElement({
+      ...currentWeather,
+      ...weatherForecast,
+      isLoading: false,
+    })
+
+  
+  }, []);
+  
   const {
     locationName,
     description,
@@ -225,26 +244,8 @@ function App() {
 
 
   useEffect(()=>{
-    const fetchData = async()=>{
-      setWeatherElement((prevState)=>({
-        ...prevState,
-        isLoading: true,
-      }));
-      const [currentWeather, weatherForecast] = await Promise.all([
-        fetchCurrentWeather(), 
-        fetchWeatherForecast(),
-      ]);
-
-      console.log(currentWeather, weatherForecast)
-      setWeatherElement({
-        ...currentWeather,
-        ...weatherForecast,
-        isLoading: false,
-      })
-
-    }
     fetchData();
-  }, []);
+  }, [fetchData]);
  
   return (
     <ThemeProvider theme={theme[currentTheme]}>
@@ -261,10 +262,7 @@ function App() {
           <AirFlow><AirFlowIcon /> {windSpped} m/h </AirFlow>
           <Rain> <RainIcon/> {rainPossibility} %</Rain>
           <Refresh 
-            onClick={()=>{
-              fetchCurrentWeather();
-              fetchWeatherForecast();
-            }} 
+            onClick={fetchData}  
             isLoading={isLoading}> 
             最後觀測時間: 
             { 
